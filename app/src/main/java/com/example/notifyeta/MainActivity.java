@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> phoneNumbers;
     private ReceiveBroadcastReceiver imageChangeBroadcastReceiver;
     public CalculateEta calcEta;
-    public boolean finalMessage = false;
-    public boolean done = false;
+    public boolean finalMessage;
+    public boolean done;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         phoneNumbers = new ArrayList<>();
         calcEta = new CalculateEta(0.0);
+        finalMessage = false;
+        done = false;
 
         pickContactLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -99,17 +101,6 @@ public class MainActivity extends AppCompatActivity {
         String packageName = getPackageName();
         String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
         return flat != null && flat.contains(packageName);
-    }
-
-    public void sendMessage(String msg) {
-        // check for permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
-            // permission is already granted, send the SMS
-            sendSms(msg);
-        } else {
-            // request the permission
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_REQUEST_CODE);
-        }
     }
 
     private void sendSms(String msg) {
@@ -205,18 +196,18 @@ public class MainActivity extends AppCompatActivity {
                         // if we have not hit the threshold
                         if (convertToMinDouble(eta_left) > 5) {
                             String message = "I should be there in " + eta_left + " near " + time;
-                            sendMessage(message);
+                            sendSms(message);
                         } else {
                             // flag that the next message will be when we are there
                             String message = "I should be there in " + eta_left;
-                            sendMessage(message);
+                            sendSms(message);
                             finalMessage = true;
                         }
                     }
                 }
             } else if (text != null && finalMessage && !done) {
                 String message = "I am here";
-                sendMessage(message);
+                sendSms(message);
                 finalMessage = false;
                 done = true;
             }
