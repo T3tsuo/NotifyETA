@@ -9,9 +9,10 @@
 
     <TextView
         android:id="@+id/printNumber"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="@string/main_message"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,9 +22,18 @@
         android:id="@+id/contactBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/pick_contact"
+        app:layout_constraintEnd_toStartOf="@+id/openMapsButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/printNumber" />
+
+    <Button
+        android:id="@+id/openMapsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/open_maps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/printNumber"
+        app:layout_constraintStart_toEndOf="@id/contactBtn"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

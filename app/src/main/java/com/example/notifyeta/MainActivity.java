@@ -1,5 +1,6 @@
 package com.example.notifyeta;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean finalMessage;
     public boolean done;
 
+    @SuppressLint("QueryPermissionsNeeded")
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Button contactBtn = findViewById(R.id.contactBtn);
+        Button openMapsBtn = findViewById(R.id.openMapsButton);
         printNumber = findViewById(R.id.printNumber);
 
         contactBtn.setOnClickListener(view -> {
@@ -82,6 +85,19 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_REQUEST_CODE);
             }
             pickContact();
+        });
+
+        openMapsBtn.setOnClickListener(view -> {
+                String uri = "geo:"; // Just "geo:" will open to the current location
+
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                intent.setPackage("com.google.android.apps.maps");
+
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Google Maps is not installed.", Toast.LENGTH_SHORT).show();
+                }
         });
 
         // Finally we register a receiver to tell the MainActivity when a notification has been received
