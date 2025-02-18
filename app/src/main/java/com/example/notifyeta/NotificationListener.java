@@ -18,7 +18,6 @@ public class NotificationListener extends NotificationListenerService {
 
 
             Intent intent = new Intent("com.example.notifyeta");
-            intent.putExtra("NotificationCode", 1);
             intent.putExtra("text", text);
 
             sendBroadcast(intent);

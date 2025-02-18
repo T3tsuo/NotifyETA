@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,9 +40,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> pickContactLauncher;
     private ArrayList<String> phoneNumbers;
     private ReceiveBroadcastReceiver imageChangeBroadcastReceiver;
-    public CalculateEta calcEta;
+    public EtaTimer etaTimer;
     public boolean finalMessage;
     public boolean done;
+    public boolean timerRunning;
+    public String eta_left;
+    public String time;
 
     @SuppressLint("QueryPermissionsNeeded")
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -50,9 +54,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         phoneNumbers = new ArrayList<>();
-        calcEta = new CalculateEta(0.0);
+        etaTimer = new EtaTimer(0.0);
         finalMessage = false;
         done = false;
+        timerRunning = false;
 
         pickContactLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -188,6 +193,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public class MyCountDownTimer extends CountDownTimer {
+        public MyCountDownTimer(long startTime, long interval) {
+            super(startTime, interval);
+        }
+
+        @Override
+        public void onFinish() {
+            timerRunning = false;
+            String message;
+            // once the timer is finished check our current eta to see if we are 5 mins away
+            if (convertToMinDouble(eta_left) > 5) {
+                // if we are not, we are far away to create a regular message
+                message = "I should be there in " + eta_left + " near " + time;
+                // calculate the new timer that we will set
+                etaTimer.calculateNewEtaTimer(convertToMinDouble(eta_left));
+            } else {
+                // we are close so send a shorter message and make sure the next message is will be 'i am here'
+                message = "I should be there in " + eta_left;
+                finalMessage = true;
+            }
+
+            // send messages to contact(s)
+            sendSms(message);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            timerRunning = true;
+        }
+    }
+
     /**
      * Image Change Broadcast Receiver.
      * * We use this Broadcast Receiver to notify the Main Activity when
@@ -198,33 +234,28 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("text");
+
+            // if we have data, the data isn't maps being closed and we are not on the final message
+            // nor done
             if (text != null && !text.equals("finished") && !finalMessage && !done) {
-                String eta_left = "";
-                String time = "";
+                eta_left = "";
+                time = "";
+                // get the data
                 if (text.contains(" · ")) {
                     String[] temp = text.split(" · ");
                     eta_left = temp[0];
                     time = temp[2];
                 }
-                if (!eta_left.isEmpty() && !time.isEmpty()) {
-                    // check if time to send message and then update eta
-                    if (calcEta.checkSendEta(convertToMinDouble(eta_left))) {
-                        // if we have not hit the threshold
-                        if (convertToMinDouble(eta_left) > 5) {
-                            String message = "I should be there in " + eta_left + " near " + time;
-                            sendSms(message);
-                        } else {
-                            // flag that the next message will be when we are there
-                            String message = "I should be there in " + eta_left;
-                            sendSms(message);
-                            finalMessage = true;
-                        }
-                    }
+                // if we managed to get the data and we are not currently waiting to send a message
+                if (!eta_left.isEmpty() && !time.isEmpty() && !timerRunning) {
+                    // create a timer with the timer we calculated to wait and send a notification to the user
+                    CountDownTimer timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 1000);
+                    timerToSend.start();
                 }
-            } else if (text != null && finalMessage && !done) {
+            } else if (text != null && text.equals("finished") && finalMessage && !done) {
                 String message = "I am here";
                 sendSms(message);
-                finalMessage = false;
+                // make sure nothing runs again
                 done = true;
             }
         }
