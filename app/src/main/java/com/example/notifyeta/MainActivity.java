@@ -140,8 +140,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void pickContact() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-            pickContactLauncher.launch(pickContactIntent); // launch the activity using the launcher
+            try {
+                Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                pickContactLauncher.launch(pickContactIntent); // launch the activity using the launcher
+            } catch (Exception e) {
+                Toast.makeText(this, "Need a valid Contacts App", Toast.LENGTH_SHORT).show();
+            }
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_READ_CONTACTS);
         }
@@ -185,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            printNumber.setText(phoneNumbers.get(phoneNumbers.size() - 1));
+            printNumber.setText(phoneNumbers.toString());
             // Use the retrieved contact details (name, phoneNumber, etc.)
             Log.d("Contact Details", "Name: " + name + ", Phone: " + phoneNumbers.get(phoneNumbers.size() - 1));
 
@@ -257,6 +261,8 @@ public class MainActivity extends AppCompatActivity {
                 sendSms(message);
                 // make sure nothing runs again
                 done = true;
+                message = "Arrived";
+                printNumber.setText(message);
             }
         }
     }
