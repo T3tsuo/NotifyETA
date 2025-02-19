@@ -14,12 +14,10 @@ public class NotificationListener extends NotificationListenerService {
         String pack = sbn.getPackageName();
         if (pack.equals("com.google.android.apps.maps")) {
             Bundle extras = sbn.getNotification().extras;
-            CharSequence text = extras.getCharSequence("android.subText");
-
+            CharSequence driveData = extras.getCharSequence("android.subText");
 
             Intent intent = new Intent("com.example.notifyeta");
-            intent.putExtra("text", text);
-
+            intent.putExtra("subText", driveData);
             sendBroadcast(intent);
         }
     }
@@ -30,7 +28,7 @@ public class NotificationListener extends NotificationListenerService {
 
         if (pack.equals("com.google.android.apps.maps")) {
             Intent intent = new Intent("com.example.notifyeta");
-            intent.putExtra("text", "finished");
+            intent.putExtra("subText", "finished");
             sendBroadcast(intent);
         }
     }

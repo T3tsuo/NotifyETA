@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean timerRunning;
     public String eta_left;
     public String time;
+    CountDownTimer timerToSend;
 
     @SuppressLint("QueryPermissionsNeeded")
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         finalMessage = false;
         done = false;
         timerRunning = false;
+        timerToSend = new MyCountDownTimer(0, 0);
 
         pickContactLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(imageChangeBroadcastReceiver);
+        timerToSend.cancel();
     }
 
     private boolean isNotificationServiceEnabled(){
@@ -236,35 +239,56 @@ public class MainActivity extends AppCompatActivity {
     public class ReceiveBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String text = intent.getStringExtra("text");
+            String driveData = intent.getStringExtra("subText");
 
-            // if we have data, the data isn't maps being closed and we are not on the final message
-            // nor done
-            if (text != null && !text.equals("finished") && !finalMessage && !done) {
-                eta_left = "";
-                time = "";
-                // get the data
-                if (text.contains(" · ")) {
-                    String[] temp = text.split(" · ");
-                    eta_left = temp[0];
-                    time = temp[2];
-                }
-                // if we managed to get the data and we are not currently waiting to send a message
-                if (!eta_left.isEmpty() && !time.isEmpty() && !timerRunning) {
-                    // create a timer with the timer we calculated to wait and send a notification to the user
-                    CountDownTimer timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(),
-                            Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue());
-                    timerRunning = true;
-                    timerToSend.start();
-                }
-            } else if (text != null && text.equals("finished") && finalMessage && !done) {
-                String message = "I am here";
-                sendSms(message);
-                // make sure nothing runs again
-                done = true;
-                message = "Arrived";
-                printNumber.setText(message);
+            // if we have driving mode data based on the circle
+            if (driveData != null && (driveData.contains(" · ") || driveData.contains("finished"))) {
+                driveMode(driveData);
             }
+
+        }
+    }
+
+    public void driveMode(String text) {
+        // if we are currently driving and are waiting to send the last message
+        if (!text.equals("finished") && !finalMessage && !done) {
+            // update our variables with new notification
+            updateEta(text);
+            // if we managed to get the data and we are not currently waiting to send a message
+            if (!eta_left.isEmpty() && !time.isEmpty() && !timerRunning) {
+                startTimerToSendMessage();
+            }
+        } else if (text.equals("finished") && !finalMessage && !done) {
+            // if the user cancels directions before nearing the end of the trip
+            timerToSend.cancel();
+        } else if (text.equals("finished") && finalMessage && !done) {
+            // if we are there or if the user ends the trip manually and we are near
+            timerToSend.cancel();
+            String message = "I am here";
+            sendSms(message);
+            // make sure nothing runs again
+            done = true;
+            message = "Arrived";
+            printNumber.setText(message);
+        }
+    }
+
+    public void startTimerToSendMessage() {
+        // create a timer with the timer we calculated to wait and send a notification to the user
+        timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 1000);
+        timerRunning = true;
+        timerToSend.start();
+    }
+
+    public void updateEta(String text) {
+        eta_left = "";
+        time = "";
+        // get the data, but make sure we are getting enough data
+        String[] temp = text.split(" · ");
+        // if we are getting eta, distance and time then grab the data
+        if (temp.length == 3) {
+            eta_left = temp[0];
+            time = temp[2];
         }
     }
 
