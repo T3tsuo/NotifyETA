@@ -224,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onTick(long millisUntilFinished) {
-            timerRunning = true;
         }
     }
 
@@ -253,7 +252,9 @@ public class MainActivity extends AppCompatActivity {
                 // if we managed to get the data and we are not currently waiting to send a message
                 if (!eta_left.isEmpty() && !time.isEmpty() && !timerRunning) {
                     // create a timer with the timer we calculated to wait and send a notification to the user
-                    CountDownTimer timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 1000);
+                    CountDownTimer timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(),
+                            Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue());
+                    timerRunning = true;
                     timerToSend.start();
                 }
             } else if (text != null && text.equals("finished") && finalMessage && !done) {
