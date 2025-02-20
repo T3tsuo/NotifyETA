@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int SEND_SMS_PERMISSION_REQUEST_CODE = 1;
     private ActivityResultLauncher<Intent> pickContactLauncher;
     private ArrayList<String> phoneNumbers;
+    private ArrayList<String> contactNames;
     private ReceiveBroadcastReceiver imageChangeBroadcastReceiver;
     public EtaTimer etaTimer;
     public boolean finalMessage;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         phoneNumbers = new ArrayList<>();
+        contactNames = new ArrayList<>();
         etaTimer = new EtaTimer(0.0);
         finalMessage = false;
         done = false;
@@ -191,8 +193,9 @@ public class MainActivity extends AppCompatActivity {
                     phoneCursor.close();
                 }
             }
+            contactNames.add(name);
 
-            printNumber.setText(phoneNumbers.toString());
+            printNumber.setText(contactNames.toString());
             // Use the retrieved contact details (name, phoneNumber, etc.)
             Log.d("Contact Details", "Name: " + name + ", Phone: " + phoneNumbers.get(phoneNumbers.size() - 1));
 
