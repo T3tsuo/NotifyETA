@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public String eta_left;
     public String time;
     CountDownTimer timerToSend;
+    public Double eta_threshold;
 
     @SuppressLint("QueryPermissionsNeeded")
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -142,6 +143,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void sendEtaToContacts() {
+        String message;
+        // once the timer is finished check our current eta to see if we are 5 mins away
+        if (convertToMinDouble(eta_left) > 5) {
+            // if we are not, we are far away to create a regular message
+            message = "I should be there in " + eta_left + " near " + time;
+            // calculate the new timer that we will set
+            etaTimer.calculateNewEtaTimer(convertToMinDouble(eta_left));
+        } else {
+            // we are close so send a shorter message and make sure the next message is will be 'i am here'
+            message = "I should be there in " + eta_left;
+            finalMessage = true;
+        }
+
+        // send messages to contact(s)
+        sendSms(message);
+    }
+
 
     private void pickContact() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
@@ -211,25 +230,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFinish() {
             timerRunning = false;
-            String message;
-            // once the timer is finished check our current eta to see if we are 5 mins away
-            if (convertToMinDouble(eta_left) > 5) {
-                // if we are not, we are far away to create a regular message
-                message = "I should be there in " + eta_left + " near " + time;
-                // calculate the new timer that we will set
-                etaTimer.calculateNewEtaTimer(convertToMinDouble(eta_left));
-            } else {
-                // we are close so send a shorter message and make sure the next message is will be 'i am here'
-                message = "I should be there in " + eta_left;
-                finalMessage = true;
-            }
-
-            // send messages to contact(s)
-            sendSms(message);
+            sendEtaToContacts();
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
+            // if we are driving early and hit the threshold when the timer should go off
+            // we send the message
+            if (convertToMinDouble(eta_left) <= eta_threshold) {
+                timerToSend.cancel();
+                timerToSend.onFinish();
+            }
         }
     }
 
@@ -259,6 +270,8 @@ public class MainActivity extends AppCompatActivity {
             updateEta(text);
             // if we managed to get the data and we are not currently waiting to send a message
             if (!eta_left.isEmpty() && !time.isEmpty() && !timerRunning) {
+                // eta threshold is when the message should be sent if we are not going expected speed
+                eta_threshold = convertToMinDouble(eta_left) - etaTimer.getEtaTimer();
                 startTimerToSendMessage();
             }
         } else if (text.equals("finished") && !finalMessage && !done) {
@@ -278,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTimerToSendMessage() {
         // create a timer with the timer we calculated to wait and send a notification to the user
-        timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 1000);
+        timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 20000);
         timerRunning = true;
         timerToSend.start();
     }
