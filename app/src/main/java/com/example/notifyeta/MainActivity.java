@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTimerToSendMessage() {
         // create a timer with the timer we calculated to wait and send a notification to the user
-        timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 20000);
+        timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 1000);
         timerRunning = true;
         timerToSend.start();
     }
