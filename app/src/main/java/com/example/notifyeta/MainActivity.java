@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void driveMode(String text) {
-        // if we are currently driving and are waiting to send the last message
+        // if we are currently driving and aren't waiting to send the last message
         if (!text.equals("finished") && !finalMessage && !done) {
             // update our variables with new notification
             updateEta(text);
