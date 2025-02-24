@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(phoneNumber, null, msg, null, null);
             }
-            Toast.makeText(this, "SMS sent successfully!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(this, "Failed to send SMS: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -216,7 +215,11 @@ public class MainActivity extends AppCompatActivity {
 
             printNumber.setText(contactNames.toString());
             // Use the retrieved contact details (name, phoneNumber, etc.)
-            Log.d("Contact Details", "Name: " + name + ", Phone: " + phoneNumbers.get(phoneNumbers.size() - 1));
+            try{
+                Log.d("Contact Details", "Name: " + name + ", Phone: " + phoneNumbers.get(phoneNumbers.size() - 1));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                Toast.makeText(this, "No number attached to contact", Toast.LENGTH_SHORT).show();
+            }
 
             cursor.close();
         }
