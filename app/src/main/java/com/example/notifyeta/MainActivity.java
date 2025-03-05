@@ -26,6 +26,7 @@ import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Button;
+import androidx.appcompat.widget.SwitchCompat;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public String time;
     CountDownTimer timerToSend;
     public Double eta_threshold;
+    SwitchCompat walkingSwitch;
 
     @SuppressLint("QueryPermissionsNeeded")
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         done = false;
         timerRunning = false;
         timerToSend = new MyCountDownTimer(0, 0);
+        walkingSwitch = findViewById(R.id.walkingSwitch);
 
         pickContactLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -293,7 +296,14 @@ public class MainActivity extends AppCompatActivity {
         } else if (text.equals("finished") && finalMessage && !done) {
             // if we are there or if the user ends the trip manually and we are near
             timerToSend.cancel();
-            String message = "I am here";
+            String message;
+            // if we are walking after we park, the final message will let them know
+            if (walkingSwitch.isChecked()) {
+                message = "Just parked, walking over now";
+            } else{
+                // if we are not walking, just say that we are there
+                message = "I am here";
+            }
             sendSms(message);
             // make sure nothing runs again
             done = true;

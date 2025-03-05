@@ -3,4 +3,5 @@
     <string name="main_message">Pick 1 or more contact one at a time to update them on your ETA using Google Maps</string>
     <string name="pick_contact">Pick Contact(s)</string>
     <string name="open_maps">Open Maps</string>
+    <string name="walking_switch_text">Are you walking after your arrival?</string>
 </resources>

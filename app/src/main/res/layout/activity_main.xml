@@ -11,6 +11,7 @@
         android:id="@+id/printNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
         android:text="@string/main_message"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -35,5 +36,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/printNumber"
         app:layout_constraintStart_toEndOf="@id/contactBtn"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/walkingSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/walking_switch_text"
+        android:paddingTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contactBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
