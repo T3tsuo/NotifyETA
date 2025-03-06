@@ -7,6 +7,11 @@ This app will automate notifying the ETA of your drive on Google Maps to people 
 * There is one configuation on this app, a toggle that will change the final message of your drive depending on whether you have to walk after you've parked or if your destination is where you parked.
 * This app should not have too many manual configurations as it should be a quick start before driving so the user can just let the app run and not worry about configuring anything.
 
+# References
+* [Permissions for the app](#permissions-for-the-app)
+* [HIGHLY Suggested Permissions](#highly-suggested-permissions)
+* [How to setup the app for a drive](#how-to-setup-the-app-for-a-drive)
+
 ## Permissions for the app
 * The app ask to read your notifications since that is how it will read your current ETA on Google Maps (permission will warn that the app will read all your notifications but the repo will verify that the app only filters for google maps information).
 * The app ask for SMS permisssions to be able to automate sending updates of your ETA to your selected contacts.
