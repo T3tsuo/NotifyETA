@@ -25,6 +25,6 @@ This app will automate notifying the ETA of your drive on Google Maps to people 
 Note: If the app is managed automatically to save power on your phone, there is a big chance that if your phone screen is off or not on the app, that the messages will not be sent until you go back on the NotifyETA app.
 
 ## How to setup the app for a drive
-* Preferrably, NotifyETA app should be opened first to select the contacts you want to notify before you start the drive. Once you have selected your contacts and make sure you are happy with the configuration switch (toggle on if you are walking after you park or leave it off if you are not).
+* NotifyETA should be opened first to select the contacts you want to notify before you start the drive. Once you have selected your contacts and make sure you are happy with the configuration switch (toggle on if you are walking after you park or leave it off if you are not).
 * Then the NotifyETA has a button to open Google Maps to then start your drive.
   * You can also start your drive on Android Auto after you have setup the NotifyApp to your liking.
