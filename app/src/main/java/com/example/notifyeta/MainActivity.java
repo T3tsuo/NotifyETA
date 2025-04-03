@@ -288,6 +288,10 @@ public class MainActivity extends AppCompatActivity {
             if (!eta_left.isEmpty() && !time.isEmpty() && !timerRunning) {
                 // eta threshold is when the message should be sent if we are not going expected speed
                 eta_threshold = convertToMinDouble(eta_left) - etaTimer.getEtaTimer();
+                // if next eta to send message is 5mins or less, set it to 2mins
+                if (eta_threshold <= 5) {
+                    eta_threshold = 2.0;
+                }
                 startTimerToSendMessage();
             }
         } else if (text.equals("finished") && finalMessage && !done) {
@@ -311,9 +315,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTimerToSendMessage() {
         // create a timer with the timer we calculated to wait and send a notification to the user
-        timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 1000);
-        timerRunning = true;
-        timerToSend.start();
+        if (eta_threshold == 2.0) {
+            // timer so that it should send message when eta has 2mins left
+            timerToSend = new MyCountDownTimer(Double.valueOf(60000 * convertToMinDouble(eta_left) - eta_threshold).longValue(), 1000);
+            timerRunning = true;
+            timerToSend.start();
+        } else {
+            timerToSend = new MyCountDownTimer(Double.valueOf(60000 * etaTimer.getEtaTimer()).longValue(), 1000);
+            timerRunning = true;
+            timerToSend.start();
+        }
+
     }
 
     public void updateEta(String text) {
