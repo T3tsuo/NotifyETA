@@ -290,9 +290,6 @@ public class MainActivity extends AppCompatActivity {
                 eta_threshold = convertToMinDouble(eta_left) - etaTimer.getEtaTimer();
                 startTimerToSendMessage();
             }
-        } else if (text.equals("finished") && !finalMessage && !done) {
-            // if the user cancels directions before nearing the end of the trip
-            timerToSend.cancel();
         } else if (text.equals("finished") && finalMessage && !done) {
             // if we are there or if the user ends the trip manually and we are near
             timerToSend.cancel();
