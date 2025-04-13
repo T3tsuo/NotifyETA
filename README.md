@@ -1,5 +1,5 @@
 # NotifyETA
-Using NotificationListenerService to get the ETA of googlemaps and send updates to contacts.
+Using NotificationListenerService to get the ETA of googlemaps and automate sending direction ETA updates to contacts.
 
 # References
 * [Purpose of this app](#purpose-of-this-app)
