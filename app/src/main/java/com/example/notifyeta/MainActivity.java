@@ -147,6 +147,43 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendEtaToContacts() {
         String message;
+        if (walkingSwitch.isChecked()) {
+            message = parkedSmsMessage();
+        } else {
+            message = notParkedSmsMessage();
+        }
+
+        // send messages to contact(s)
+        sendSms(message);
+    }
+
+    private String parkedSmsMessage() {
+        String message;
+        // if this isn't the first message
+        if (etaTimer.getEtaTimer() != 0) {
+            if (convertToMinDouble(eta_left) > 5) {
+                // once the timer is finished check our current eta to see if we are 5 mins away
+                // if we are not, we are far away to create a regular message
+                message = "I should be parking in " + eta_left + " near " + time;
+                // calculate the new timer that we will set
+                etaTimer.calculateNewEtaTimer(convertToMinDouble(eta_left));
+            } else {
+                // we are close so send a shorter message and make sure the next message is will be parked
+                message = "I should be parked in " + eta_left;
+                finalMessage = true;
+            }
+        } else {
+            // if this is the first message of the app
+            // let them know we are leaving now
+            message = "Leaving now, I should be parking in " + eta_left + " near " + time;
+            // calculate the new timer that we will set
+            etaTimer.calculateNewEtaTimer(convertToMinDouble(eta_left));
+        }
+        return message;
+    }
+
+    private String notParkedSmsMessage() {
+        String message;
         // if this isn't the first message
         if (etaTimer.getEtaTimer() != 0) {
             if (convertToMinDouble(eta_left) > 5) {
@@ -167,11 +204,8 @@ public class MainActivity extends AppCompatActivity {
             // calculate the new timer that we will set
             etaTimer.calculateNewEtaTimer(convertToMinDouble(eta_left));
         }
-
-        // send messages to contact(s)
-        sendSms(message);
+        return message;
     }
-
 
     private void pickContact() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
